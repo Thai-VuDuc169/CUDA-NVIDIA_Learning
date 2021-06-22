@@ -1,0 +1,3 @@
+Execution time when running on GPU: 0.528489 seconds.
+Execution time when running on CPU: 95.0353 seconds.
+Successful
