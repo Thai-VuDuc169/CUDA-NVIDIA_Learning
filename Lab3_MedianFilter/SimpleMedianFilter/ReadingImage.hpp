@@ -5,6 +5,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 
+#include"Common.hpp"
 #include<string>
 #include<cassert>
 #include<iostream>
@@ -24,7 +25,6 @@ class Matrix
       Matrix(const int &temp_row, const int &temp_col);
       Matrix(const cv::Mat &mat);
       Matrix(const string &path_name, const int &kernel_size); // Ma trận khởi tạo có sẵn padding ứng với kích thước của kerenl_size
-      // Matrix(u_char* mat, const int &temp_row, const int &temp_col);
       // Destructor
       ~Matrix();
    public:
