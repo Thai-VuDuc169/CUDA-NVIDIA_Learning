@@ -4,18 +4,19 @@ using namespace std;
 
 int* x()
 {
-   int *x = (int*)malloc(sizeof(int));
-   *x = 9;
+   // int *x = (int*)malloc(sizeof(int));
+   int *x = new int;
    return x;
 };
 
 int main()
 {
    int *y = x();
+   *y = 1;
    cout << &y << " : " << y << " : " << *y << endl;
 
-   free(y);
-   assert( *y != NULL);
+   delete (y);
+   // assert( *y != NULL);
    cout << &y << " : " << y << " : " << *y << endl;
 
    return 0;

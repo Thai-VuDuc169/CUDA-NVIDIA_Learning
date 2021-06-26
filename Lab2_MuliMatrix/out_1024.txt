@@ -1,1 +1,0 @@
-Execution time when running on GPU: 4.349e-05 seconds.
