@@ -15,7 +15,7 @@ Matrix::Matrix(const int &temp_row, const int &temp_col)
    size_t mat_size = this->rows * this->cols * sizeof(u_char);
    this->h_elements = (u_char*)malloc(mat_size);
    assert(this->h_elements != NULL);
-   gpuErrchk( cudaMalloc(&this->d_elements, mat_size) );
+   gpuErrchk( cudaMalloc((void**)&(this->d_elements), mat_size) );
 };
 
 Matrix::Matrix(const cv::Mat &mat)
@@ -27,7 +27,22 @@ Matrix::Matrix(const cv::Mat &mat)
    assert(this->h_elements != NULL);
    for (int i = 0; i < this->rows * this->cols; i++)
       this->h_elements[i] = mat.data[i];
-   gpuErrchk(cudaMalloc(&this->d_elements, mat_size));
+   gpuErrchk(cudaMalloc((void**)&(this->d_elements), mat_size));
+   gpuErrchk(cudaMemcpy(this->d_elements, this->h_elements, mat_size, cudaMemcpyHostToDevice));
+};
+
+// hàm tạo ma trận không có padding zero
+Matrix::Matrix(const string &path_name)
+{
+   cv::Mat mat = cv::imread(path_name, cv::IMREAD_GRAYSCALE);
+   this->rows = mat.rows;
+   this->cols = mat.cols;
+   size_t mat_size = this->rows * this->cols * sizeof(u_char);
+   this->h_elements = (u_char*)malloc(mat_size);
+   assert(this->h_elements != NULL);
+   for (int i = 0; i < this->rows * this->cols; i++)
+      this->h_elements[i] = mat.data[i];
+   gpuErrchk(cudaMalloc((void**)&(this->d_elements), mat_size));
    gpuErrchk(cudaMemcpy(this->d_elements, this->h_elements, mat_size, cudaMemcpyHostToDevice));
 };
 
@@ -59,7 +74,7 @@ Matrix::Matrix(const std::string &path_name, const int &kernel_size)
          }
       }
    }
-   gpuErrchk(cudaMalloc(&this->d_elements, mat_size));
+   gpuErrchk(cudaMalloc((void**)&(this->d_elements), mat_size));
    gpuErrchk(cudaMemcpy(this->d_elements, this->h_elements, mat_size, cudaMemcpyHostToDevice));
 };
 

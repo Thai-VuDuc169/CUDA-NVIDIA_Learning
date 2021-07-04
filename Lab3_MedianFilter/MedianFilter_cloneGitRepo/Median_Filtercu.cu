@@ -11,6 +11,9 @@ __global__ void medianFilterKernel(unsigned char* inputImageKernel, unsigned cha
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned char filterVector[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	// size_t size_mat = 9 * sizeof(u_char);
+	// u_char *filterVector = (u_char*) malloc(9 * sizeof(u_char)) ;
+	// cudaMalloc((void**)&filterVector, 9 * sizeof(u_char));
 	if ((row == 0) || (col == 0) || (row == imageHeight - 1) || (col == imageWidth - 1))
 		outputImageKernel[row * imageWidth + col] = 0;
 	else {
@@ -30,7 +33,9 @@ __global__ void medianFilterKernel(unsigned char* inputImageKernel, unsigned cha
 			}
 		}
 		outputImageKernel[row * imageWidth + col] = filterVector[4];
+		// cudaFree (filterVector);
 	}
+	// free(filterVector);
 }
 
 __global__ void medianFilterSharedKernel(unsigned char* inputImageKernel, unsigned char* outputImageKernel, int imageWidth, int imageHeight) {
@@ -165,3 +170,56 @@ bool MedianFilterGPU(Bitmap* image, Bitmap* outputImage, bool sharedMemoryUse) {
 	printf("time %f\n", time);
 	return true;
 }
+
+#define NUM_ELEMENTS 9
+__global__ 
+void actMedianFilter(u_char *input, u_char *output, int kernel_size, int old_rows, int old_cols)
+/*******************\
+input: mảng chứa ảnh 1 chiều đã thực hiện padding.
+output: mảng chứa ảnh 1 chiều sau khi thực hiện median filter.
+kernel_size: kích thước bộ lọc (this is a odd num).
+rows, cols: kích thước chiều cao, rộng của ảnh đầu ra.
+\*******************/
+{
+   int row = blockIdx.y * blockDim.y + threadIdx.y;
+   int col = blockIdx.x * blockDim.x + threadIdx.x;
+   int pad_num = (int)(kernel_size/2);
+   const int num_elements = NUM_ELEMENTS;
+   int new_cols = old_cols + 2 * pad_num;
+   if ((row >= pad_num) && (row <= (pad_num - 1 + old_rows))
+         && (col >= pad_num) && (col <= (pad_num - 1 + old_cols)))
+   {
+		u_char temp_array[num_elements];
+		// u_char *temp_array = (u_char*)malloc(num_elements * sizeof(u_char));
+      // memset(temp_array, 0 , num_elements * sizeof(u_char));
+      // u_char *temp_array = new u_char[num_elements]; 
+      // trích xuất các phần tử trong kernel ra mảng để sắp xếp
+      // i -> rows
+      for (int i = 0; i < kernel_size; i++)
+      {
+         // j -> cols
+         for (int j = 0; j < kernel_size; j++)
+            {
+               temp_array[i * kernel_size + j] = input[((row-pad_num) + i) * new_cols + ((col-pad_num) + j)];
+            }
+      }
+      // Ascending the array
+      for(int i = 0; i < num_elements - 1; i++)
+      {
+         for (int j = i + 1; j < num_elements; j++)
+         {
+            if (temp_array[i] > temp_array[j])
+            {
+               u_char swap = temp_array[i];
+               temp_array[i] = temp_array[j];
+               temp_array[j] = swap;
+            }
+         }
+      }
+      // replace pixel to the ouput image
+      output[(row-pad_num) * old_cols + (col-pad_num)] = temp_array[(int)((num_elements)/2)];
+      // deallocate the memory
+      // free(temp_array);
+      // delete[] temp_array;
+   }
+};

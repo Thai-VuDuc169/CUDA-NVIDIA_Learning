@@ -10,7 +10,6 @@
 #include<cassert>
 #include<iostream>
 
-// using namesapce cv;
 using namespace std;
 
 class Matrix
@@ -24,7 +23,8 @@ class Matrix
       Matrix();
       Matrix(const int &temp_row, const int &temp_col);
       Matrix(const cv::Mat &mat);
-      Matrix(const string &path_name, const int &kernel_size); // Ma trận khởi tạo có sẵn padding ứng với kích thước của kerenl_size
+      Matrix(const std::string &path_name); // Ma trận khởi tạo không có padding
+      Matrix(const std::string &path_name, const int &kernel_size); // Ma trận khởi tạo có sẵn padding ứng với kích thước của kerenl_size
       // Destructor
       ~Matrix();
    public:

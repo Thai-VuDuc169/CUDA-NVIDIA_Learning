@@ -3,7 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/local/cuda-10.2/samples/common/inc",
+                "/usr/include",
+                "/usr/local/cuda-10.2/targets/aarch64-linux/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

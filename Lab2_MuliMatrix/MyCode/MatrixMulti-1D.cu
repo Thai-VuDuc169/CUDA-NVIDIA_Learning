@@ -11,6 +11,9 @@ Author: Vu Duc Thai
 #include <cassert>
 #include <chrono>
 
+#include <helper_functions.h>
+#include <helper_cuda.h>
+
 using std::cout;
 using std::endl;
 using std::chrono::steady_clock;
@@ -63,7 +66,7 @@ void verifyMatries(int *mat1, int *mat2, int *ref_mat, const int &N)
 int main()
 {
    // Set our square matrix dimension (2^10 x 2^10 default)
-   int N = 1 << 10; 
+   int N = 1 << 12; 
    size_t bytes = N * N * sizeof(int);
    // Allocate memory for our matrices
    int *mat1, *mat2, *result_mat;
@@ -81,22 +84,36 @@ int main()
    dim3 NUM_THREADS (threads, threads); 
    dim3 NUM_BLOCKS (blocks, blocks);
 
-   auto start = steady_clock::now();
+   // measure time using GPU timer
+   cudaEvent_t start, stop;
+   // Allocate CUDA events that we'll use for timing
+   checkCudaErrors(cudaEventCreate(&start));
+   checkCudaErrors(cudaEventCreate(&stop));
+
+   auto start_CPU = steady_clock::now();
+   cudaEventRecord(start, NULL);
    // Launch our kernel
    multiMatries<<<NUM_BLOCKS, NUM_THREADS>>>(mat1, mat2, result_mat, N);
    cudaDeviceSynchronize();
-   auto end = steady_clock::now();
+   auto end_CPU = steady_clock::now();
+   
+   cudaEventRecord(stop, NULL);
+   float msecTotal = 0.0f;
+   cudaEventElapsedTime(&msecTotal, start, stop);
+
    cout << "Execution time when running on GPU: "
-         << duration_cast <duration<double>>(end - start).count()
-         << " seconds." << endl;
+         << duration_cast <duration<double>>(end_CPU - start_CPU).count()
+         << " seconds.\n\tGPU timer: " << msecTotal << endl;
+   
 
 
-   start = steady_clock::now();
+
+   start_CPU = steady_clock::now();
    // verify the result of matrix multiplication
-   verifyMatries(mat1, mat2, result_mat, N);
-   end = steady_clock::now();
+   // verifyMatries(mat1, mat2, result_mat, N);
+   end_CPU = steady_clock::now();
    cout << "Execution time when running on CPU: "
-         << duration_cast <duration<double>>(end - start).count()
+         << duration_cast <duration<double>>(end_CPU - start_CPU).count()
          << " seconds." << endl;
 
    cout << "Successful" << endl;

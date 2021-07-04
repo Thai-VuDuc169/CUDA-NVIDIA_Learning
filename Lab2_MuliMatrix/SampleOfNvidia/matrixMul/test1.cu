@@ -159,11 +159,11 @@ int MatrixMultiply(int argc, char **argv,
     // Allocate host memory for matrices A and B
     unsigned int size_A = dimsA.x * dimsA.y;
     unsigned int mem_size_A = sizeof(float) * size_A;
-    float *h_A = reinterpret_cast<float *>(malloc(mem_size_A));
+    float *h_A = (float*)malloc(mem_size_A);
     unsigned int size_B = dimsB.x * dimsB.y;
     unsigned int mem_size_B = sizeof(float) * size_B;
-    float *h_B = reinterpret_cast<float *>(malloc(mem_size_B));
-    cudaStream_t stream;
+    float *h_B = (float*)malloc(mem_size_B);
+   //  cudaStream_t stream;
 
     // Initialize host memory
     randomInit(h_A, size_A);
@@ -176,64 +176,66 @@ int MatrixMultiply(int argc, char **argv,
     dim3 dimsC(dimsB.x, dimsA.y, 1);
     unsigned int size_C = dimsC.x * dimsC.y;
     unsigned int mem_size_C = size_C * sizeof(float);
-    float *h_C = reinterpret_cast<float *>(malloc(mem_size_C));
+    float *h_C = (float*)malloc(mem_size_C);
 
     if (h_C == NULL) {
         fprintf(stderr, "Failed to allocate host matrix C!\n");
         exit(EXIT_FAILURE);
     }
 
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&d_A), mem_size_A));
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&d_B), mem_size_B));
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&d_C), mem_size_C));
+    checkCudaErrors(cudaMalloc((void **)(&d_A), mem_size_A));
+    checkCudaErrors(cudaMalloc((void **)(&d_B), mem_size_B));
+    checkCudaErrors(cudaMalloc((void **)(&d_C), mem_size_C));
     // Allocate CUDA events that we'll use for timing
     cudaEvent_t start, stop;
     checkCudaErrors(cudaEventCreate(&start));
     checkCudaErrors(cudaEventCreate(&stop));
 
-    checkCudaErrors(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+   //  checkCudaErrors(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
 
     // copy host memory to device
-    checkCudaErrors(cudaMemcpyAsync(d_A, h_A, mem_size_A, cudaMemcpyHostToDevice, stream));
-    checkCudaErrors(cudaMemcpyAsync(d_B, h_B, mem_size_B, cudaMemcpyHostToDevice, stream));
+    checkCudaErrors(cudaMemcpy(d_A, h_A, mem_size_A, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(d_B, h_B, mem_size_B, cudaMemcpyHostToDevice));
+
 
     // Setup execution parameters
     dim3 threads(block_size, block_size);
     dim3 grid(dimsB.x / threads.x, dimsA.y / threads.y);
 
     // Create and start timer
-    printf("Computing result using CUDA Kernel...\n");
+   //  printf("Computing result using CUDA Kernel...\n");
 
-    // Performs warmup operation using matrixMul CUDA kernel
-    if (block_size == 16) {
-        MatrixMulCUDA<16> <<< grid, threads, 0, stream>>>(d_C, d_A, d_B,
-                                                dimsA.x, dimsB.x);
-    } else {
-        MatrixMulCUDA<32> <<< grid, threads, 0, stream>>>(d_C, d_A, d_B,
-                                                dimsA.x, dimsB.x);
-    }
+   //  // Performs warmup operation using matrixMul CUDA kernel
+   //  if (block_size == 16) {
+   //      MatrixMulCUDA<16> <<< grid, threads, 0>>>(d_C, d_A, d_B,
+   //                                              dimsA.x, dimsB.x);
+   //  } else {
+   //      MatrixMulCUDA<32> <<< grid, threads, 0>>>(d_C, d_A, d_B,
+   //                                              dimsA.x, dimsB.x);
+   //  }
 
-    printf("done\n");
-    checkCudaErrors(cudaStreamSynchronize(stream));
+   // printf("done\n");
+   // //  checkCudaErrors(cudaStreamSynchronize(stream));
+   //  checkCudaErrors(cudaDeviceSynchronize());
 
     // Record the start event
-    checkCudaErrors(cudaEventRecord(start, stream));
+    checkCudaErrors(cudaEventRecord(start, NULL));
 
     // Execute the kernel
     int nIter = 50;
 
     for (int j = 0; j < nIter; j++) {
         if (block_size == 16) {
-            MatrixMulCUDA<16> <<<grid, threads, 0, stream>>>(d_C, d_A, d_B,
+            MatrixMulCUDA<16> <<<grid, threads, 0>>>(d_C, d_A, d_B,
                                                     dimsA.x, dimsB.x);
         } else {
-            MatrixMulCUDA<32> <<<grid, threads, 0, stream>>>(d_C, d_A, d_B,
+            MatrixMulCUDA<32> <<<grid, threads, 0>>>(d_C, d_A, d_B,
                                                     dimsA.x, dimsB.x);
         }
     }
 
     // Record the stop event
-    checkCudaErrors(cudaEventRecord(stop, stream));
+    checkCudaErrors(cudaEventRecord(stop, NULL));
 
     // Wait for the stop event to complete
     checkCudaErrors(cudaEventSynchronize(stop));
@@ -260,8 +262,8 @@ int MatrixMultiply(int argc, char **argv,
 
 
     // Copy result from device to host
-    checkCudaErrors(cudaMemcpyAsync(h_C, d_C, mem_size_C, cudaMemcpyDeviceToHost, stream));
-    checkCudaErrors(cudaStreamSynchronize(stream));
+    checkCudaErrors(cudaMemcpy(h_C, d_C, mem_size_C, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaDeviceSynchronize());
     
     // verify the result of matrix multiplication
     float *reference = (float *)malloc(mem_size_C);
@@ -308,7 +310,8 @@ int main(int argc, char **argv) {
     // int dev = findCudaDevice(argc, (const char **)argv);
     int block_size = 32;
 
-    for (int i = 1; i <= 64; i *= 2)
+    // for (int i = 1; i <= 128; i *= 2)
+    int i = 128;
     {
         dim3 dimsA(i * block_size, i * block_size, 1);
         dim3 dimsB(i * block_size, i * block_size, 1);
