@@ -51,4 +51,4 @@ nvcc Median_Filtercu.cu Main.cu  -o out
 ```
 nvcc [all of *.cu or *.cpp] -o [name_file_output] -I/usr/include/opencv4 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lopencv_videoio -Xptxas="-v" 
 ```
-Example: ```nvcc MedianFilter.cu Main.cu ReadingImage.cu -gencode arch=compute_50,code=sm_50 -o out -I/usr/include/opencv4 -lopencv_core  -lopencv_imgcodecs```
+Example: ```nvcc MedianFilter.cu Main.cu ReadingImage.cu -gencode arch=compute_53,code=sm_53 -o out -I/usr/include/opencv4 -lopencv_core  -lopencv_imgcodecs```

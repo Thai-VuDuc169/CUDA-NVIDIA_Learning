@@ -113,7 +113,7 @@ void Matrix::saveImage(const std::string &str)
    bool result = false;
    try
    {
-      result = imwrite(str + std::string(".jpg"), temp_mat);
+      result = imwrite(str, temp_mat);
    }
    catch (const cv::Exception& ex)
    {

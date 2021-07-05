@@ -2,7 +2,7 @@ import numpy as np
 import random
 import cv2
 
-def sp_noise(image,prob):
+def genNoise(image,prob):
     '''
     Add salt and pepper noise to image
     prob: Probability of the noise
@@ -19,7 +19,7 @@ def sp_noise(image,prob):
             else:
                 output[i][j] = image[i][j]
     return output
-
-image = cv2.imread('/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/test1.jpg',0) # Only for grayscale image
-noise_img = sp_noise(image,0.07)
-cv2.imwrite('sp_noise.jpg', noise_img)
+if __name__ == "__main__":
+    image = cv2.imread('/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/test1.jpg',0) # Only for grayscale image
+    noise_img = genNoise(image,0.07)
+    cv2.imwrite('genNoise.jpg', noise_img)
