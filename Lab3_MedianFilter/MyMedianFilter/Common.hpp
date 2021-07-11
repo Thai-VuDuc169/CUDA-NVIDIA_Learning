@@ -8,13 +8,13 @@
 #include <string>
 
 // ==================================== customable ==================================== 
-#define KERNEL_SIZE 11 // assert >= 0      
-#define NUM_ELEMENTS 121       
+#define KERNEL_SIZE 3 // assert >= 0      
+#define NUM_ELEMENTS 9       
 #define TILE_SIZE 32
 #define ITER_NUM 30
 #define INPUT_FOLDER_PATH "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Noised/"        
 #define OUTPUT_FOLDER_PATH "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Filtered/"
-#define FILE_NAME "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Filtered/benchmark_log_JetsonNano_MedianFilter.txt"
+#define FILE_NAME "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Filtered/benchmark_log_JetsonNano_SharedMem_MedianFilter.txt"
 // ==================================== customable ====================================
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
@@ -32,7 +32,7 @@ static inline int read_files_in_dir(const char *p_dir_name, std::vector<std::str
    DIR *p_dir = opendir(p_dir_name);
    if (p_dir == nullptr) 
    {
-   return -1;
+      return -1;
    }
    struct dirent* p_file = nullptr;
    while ((p_file = readdir(p_dir)) != nullptr) 

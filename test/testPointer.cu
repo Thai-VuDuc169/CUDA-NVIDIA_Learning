@@ -35,10 +35,13 @@ int main()
    // delete (y);
    // // assert( *y != NULL);
    // cout << &y << " : " << y << " : " << *y << endl;
+   // {
+      A* a = new A;
+      cout << &(a->x) << " : " << a->x << " : " << *(a->x) << endl;
+      cout << sizeof(float)  ;
 
-   A* a = new A;
-   cout << &(a->x) << " : " << a->x << " : " << *(a->x) << endl;
-   cout << sizeof(float)  ;
+   // }
+   // cout << &(a->x) << " : " << a->x << " : " << *(a->x) << endl;
    delete a;
 
    return 0;
