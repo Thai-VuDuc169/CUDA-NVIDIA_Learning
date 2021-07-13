@@ -1,6 +1,4 @@
-# Content
-- [Content](#content)
-  - [- MyMedianFilter](#--mymedianfilter)
+# **Content**
 - [CUDA-NVIDIA_Learning (On Jetson Nano)](#cuda-nvidia_learning-on-jetson-nano)
 - [Lab1 - Hello world](#lab1---hello-world)
 - [Lab2 - Matrix Multiplication](#lab2---matrix-multiplication)
