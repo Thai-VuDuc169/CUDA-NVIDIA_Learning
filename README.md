@@ -1,13 +1,14 @@
 # Content
 - [Content](#content)
+  - [- MyMedianFilter](#--mymedianfilter)
 - [CUDA-NVIDIA_Learning (On Jetson Nano)](#cuda-nvidia_learning-on-jetson-nano)
 - [Lab1 - Hello world](#lab1---hello-world)
 - [Lab2 - Matrix Multiplication](#lab2---matrix-multiplication)
 - [Lab3 - Median Filter](#lab3---median-filter)
-  - [MedianFilter_cloneGitRepo](#medianfilter_clonegitrepo)
-  - [SimpleMedianFilter](#simplemedianfilter)
+  - [MyMedianFilter](#mymedianfilter)
+-----------------------
 # CUDA-NVIDIA_Learning (On Jetson Nano)
-Programming Massively Parallel Processors with CUDA-NVIDIA
+Programming Massively Parallel Processors with CUDA-NVIDIA on Jetson Nano Kit
  - Using nvprof tool: 
 ```
 sudo /usr/local/cuda-10.2/bin/nvprof --metrics all ./[name_file_output]
@@ -31,24 +32,27 @@ cd /usr/local/cuda-10.2/samples/1_Utilities/deviceQuery
 ```
 **Note:** 
  1. Dynamically Linked "Shared Object" Libraries(.so) is found in **/usr/lib/aarch64-linux-gnu/** on Jetson Nano. Example this "libcublas.so" library will be linked to compiler with a flag "-lcublas". 
- 2. 
 # Lab1 - Hello world
 
 # Lab2 - Matrix Multiplication
-  - Run with command (to compile code):
+  - Run with command (to compile code using cublas library):
   ```
   nvcc matrixMulCUBLAS.cpp -o out -I/usr/local/cuda-10.2/samples/common/inc -I/usr/include/ -lcublas
   ```
 
 # Lab3 - Median Filter
-## MedianFilter_cloneGitRepo
- - Run with command (to compile codes):
-```
-nvcc Median_Filtercu.cu Main.cu  -o out
-```
-## SimpleMedianFilter
+## MyMedianFilter
  - Run with command (to compile codes): 
 ```
 nvcc [all of *.cu or *.cpp] -o [name_file_output] -I/usr/include/opencv4 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lopencv_videoio -Xptxas="-v" 
 ```
-Example: ```nvcc -gencode arch=compute_53,code=sm_53 MedianFilter.cu Main.cu ReadingImage.cu -o out -I/usr/include/opencv4 -lopencv_core  -lopencv_imgcodecs```
+ - You can customize the parameters which include KERNEL_SIZE, NUM_ELEMENTS (= KERNEL_SIZE ^ 2), TILE_SIZE, ITER_NUM, ... in a _Common.hpp_ header file.
+1. Example for running code with NotShareMem_Main.cu: 
+``` 
+nvcc -gencode arch=compute_53,code=sm_53 MedianFilter.cu NotSharedMem_Main.cu ReadingImage.cu -o out -I/usr/include/opencv4 -lopencv_core  -lopencv_imgcodecs
+``` 
+2. Example for running code with ShareMem_Main.cu:
+```
+nvcc -gencode arch=compute_53,code=sm_53 MedianFilter.cu SharedMem_Main.cu ReadingImage.cu -o outSharedMem -I/usr/include/opencv4 -lopencv_core  -lopencv_imgcodecs
+```
+

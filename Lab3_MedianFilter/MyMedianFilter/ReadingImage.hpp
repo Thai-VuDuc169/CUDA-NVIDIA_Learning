@@ -32,7 +32,6 @@ class Matrix
       u_char getMatElement(const int &temp_row, const int &temp_col);
       void setMatElement(const int &temp_row, const int &temp_col, const int &val);
       // Methods come with openCV to process image
-      // void loadImage();
       void saveImage(const std::string &str);
       // Methods interact with CUDA memory
       void copyCudaMemoryD2H();

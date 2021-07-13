@@ -8,13 +8,13 @@
 #include <string>
 
 // ==================================== customable ==================================== 
-#define KERNEL_SIZE 3 // assert >= 0      
-#define NUM_ELEMENTS 9       
+#define KERNEL_SIZE 11 // assert >= 0      
+#define NUM_ELEMENTS 121       
 #define TILE_SIZE 32
-#define ITER_NUM 30
+#define ITER_NUM 50
 #define INPUT_FOLDER_PATH "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Noised/"        
-#define OUTPUT_FOLDER_PATH "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Filtered/"
-#define FILE_NAME "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Filtered/benchmark_log_JetsonNano_SharedMem_MedianFilter.txt"
+#define OUTPUT_FOLDER_PATH "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Filtered_SharedMem/"
+#define FILE_NAME "/home/thaivu/Projects/CUDA-NVIDIA_Learning/Photo/LabImageTest/Filtered_SharedMem/benchmark_log_JetsonNano_SharedMem_MedianFilter.txt"
 // ==================================== customable ====================================
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
@@ -47,10 +47,5 @@ static inline int read_files_in_dir(const char *p_dir_name, std::vector<std::str
    closedir(p_dir);
    return 0;
 };
-
-// static inline int write_files_in_dir(const char *p_dir_name, std::vector<std::string> &file_names) 
-// {
-
-// };
 
 #endif

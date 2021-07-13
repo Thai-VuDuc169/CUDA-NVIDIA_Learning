@@ -55,9 +55,9 @@ int main()
       {
          // Launch our kernel
          // https://docs.nvidia.com/cuda/cuda-c-programming-guide/#execution-configuration
-         actMedianFilterSharedKernel <<<dimGrid, dimBlock>>> (input_mat->d_elements, output_mat->d_elements, input_mat->rows, input_mat->cols);
-         gpuErrchk(cudaPeekAtLastError());
-         gpuErrchk(cudaDeviceSynchronize());
+         actMedianFilterUsingSharedMem <<<dimGrid, dimBlock>>> (input_mat->d_elements, output_mat->d_elements, input_mat->rows, input_mat->cols);
+         // gpuErrchk(cudaPeekAtLastError());
+         // gpuErrchk(cudaDeviceSynchronize());
       }
 
       // Record the stop event
